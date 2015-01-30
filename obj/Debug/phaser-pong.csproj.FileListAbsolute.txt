@@ -1,0 +1,6 @@
+C:\Users\zak\Desktop\Phaser\phaser-pong\bin\phaser-pong.dll.config
+C:\Users\zak\Desktop\Phaser\phaser-pong\bin\phaser-pong.dll
+C:\Users\zak\Desktop\Phaser\phaser-pong\bin\phaser-pong.pdb
+C:\Users\zak\Desktop\Phaser\phaser-pong\obj\Debug\phaser-pong.csprojResolveAssemblyReference.cache
+C:\Users\zak\Desktop\Phaser\phaser-pong\obj\Debug\phaser-pong.dll
+C:\Users\zak\Desktop\Phaser\phaser-pong\obj\Debug\phaser-pong.pdb
