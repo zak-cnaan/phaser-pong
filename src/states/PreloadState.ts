@@ -9,9 +9,9 @@ module states {
             this.preloadBar.anchor.setTo(0.5, 0.5);
             this.load.setPreloadSprite(this.preloadBar);
             
-            this.load.image("titlepage", "assets/titlepage.jpg");
-            this.load.image("level1", "assets/level1.png");
-            this.load.image("osaa", "assets/OSAA_LOGO.png");
+            this.load.image("ball", "assets/ball.png");
+            this.load.image("bar", "assets/bar.png");
+
             this.load.audio("zap", "assets/zap.wav");
 
         }

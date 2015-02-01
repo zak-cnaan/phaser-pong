@@ -72,9 +72,9 @@ var states;
             this.preloadBar.anchor.setTo(0.5, 0.5);
             this.load.setPreloadSprite(this.preloadBar);
 
-            this.load.image("titlepage", "assets/titlepage.jpg");
-            this.load.image("level1", "assets/level1.png");
-            this.load.image("osaa", "assets/OSAA_LOGO.png");
+            this.load.image("ball", "assets/ball.png");
+            this.load.image("bar", "assets/bar.png");
+
             this.load.audio("zap", "assets/zap.wav");
         };
 
@@ -109,7 +109,7 @@ var states;
         };
 
         TitleState.prototype.fadeOut = function () {
-            this.game.state.start("play", true, false);
+            //this.game.state.start("play", true, false);
         };
         return TitleState;
     })(Phaser.State);
@@ -148,13 +148,15 @@ var states;
         function PlayState() {
             _super.apply(this, arguments);
         }
+        //music: Phaser.Sound;
+        //player: Player;
         PlayState.prototype.create = function () {
-            this.background = this.add.sprite(this.game.world.width / 2, 0, "level1");
-            this.background.anchor.setTo(0.5, 0);
-            this.music = this.add.audio("zap", 1, false);
-            this.music.play();
-
-            this.player = new states.Player(this.game, 130, 284);
+            //this.background = this.add.sprite(this.game.world.width / 2, 0, "level1");
+            //this.background.anchor.setTo(0.5, 0);
+            //this.music = this.add.audio("zap", 1, false);
+            //this.music.play();
+            //this.player = new Player(this.game, 130, 284);
+            this.ball = this.add.sprite(this.game.world.width / 2, 0, "ball");
         };
         return PlayState;
     })(Phaser.State);
@@ -168,7 +170,8 @@ var states;
 var Game = (function (_super) {
     __extends(Game, _super);
     function Game() {
-        _super.call(this, 600, 600, Phaser.AUTO, "GAME", null);
+        debugger;
+        _super.call(this, 600, 6000, Phaser.AUTO, "GAME", null);
         this.state.add("boot", new states.BootState());
         this.state.add("preload", new states.PreloadState());
         this.state.add("title", new states.TitleState());
