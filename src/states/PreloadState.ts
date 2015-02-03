@@ -11,6 +11,8 @@ module states {
             
             this.load.image("ball", "assets/ball.png");
             this.load.image("bar", "assets/bar.png");
+            this.load.image("bar-h", "assets/bar-h.png");
+            this.load.image("titlepage", "assets/titlepage.jpg");
 
             this.load.audio("zap", "assets/zap.wav");
 
