@@ -11,29 +11,38 @@ module states {
             }
             this.name = type;
             this.anchor.setTo(0.5, 0.5);
+            
             game.physics.arcade.enableBody(this);
 
             if (type == "bottom") {
                 this.position.x = this.game.world.width / 2;
                 this.position.y = this.game.world.height - this.height;
+                this.tint = 0xFFCC99;
             }
             if (type == "top") {
                 this.position.x = this.game.world.width / 2;
                 this.position.y = this.height;
+                this.tint = 0xFF9999;
             }
             if (type == "left") {
                 this.position.y = this.game.world.height / 2;
                 this.position.x = this.width;
+                this.tint = 0x99FF99;
             }
             if (type == "right") {
                 this.position.y = this.game.world.height / 2;
                 this.position.x = this.game.world.width - this.width;
+                this.tint = 0xCCFF00;
             }
             this.body.collideWorldBounds = true;
             //this.body.bounce.set(1);
             this.body.immovable = true;
             game.add.existing(this);
+
+            this.score = 0;
+
         }
+
         
         update() {
             if (this.name == "bottom") {

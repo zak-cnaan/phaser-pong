@@ -14,7 +14,11 @@ module states {
             this.load.image("bar-h", "assets/bar-h.png");
             this.load.image("titlepage", "assets/titlepage.jpg");
 
+            this.load.image("black", "assets/black.png");
+            this.load.image("white", "assets/white.png");
+
             this.load.audio("zap", "assets/zap.wav");
+            this.load.audio("ping", "assets/ping.wav");
 
         }
         

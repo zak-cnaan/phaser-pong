@@ -77,7 +77,11 @@ var states;
             this.load.image("bar-h", "assets/bar-h.png");
             this.load.image("titlepage", "assets/titlepage.jpg");
 
+            this.load.image("black", "assets/black.png");
+            this.load.image("white", "assets/white.png");
+
             this.load.audio("zap", "assets/zap.wav");
+            this.load.audio("ping", "assets/ping.wav");
         };
 
         PreloadState.prototype.create = function () {
@@ -130,29 +134,36 @@ var states;
             }
             this.name = type;
             this.anchor.setTo(0.5, 0.5);
+
             game.physics.arcade.enableBody(this);
 
             if (type == "bottom") {
                 this.position.x = this.game.world.width / 2;
                 this.position.y = this.game.world.height - this.height;
+                this.tint = 0xFFCC99;
             }
             if (type == "top") {
                 this.position.x = this.game.world.width / 2;
                 this.position.y = this.height;
+                this.tint = 0xFF9999;
             }
             if (type == "left") {
                 this.position.y = this.game.world.height / 2;
                 this.position.x = this.width;
+                this.tint = 0x99FF99;
             }
             if (type == "right") {
                 this.position.y = this.game.world.height / 2;
                 this.position.x = this.game.world.width - this.width;
+                this.tint = 0xCCFF00;
             }
             this.body.collideWorldBounds = true;
 
             //this.body.bounce.set(1);
             this.body.immovable = true;
             game.add.existing(this);
+
+            this.score = 0;
         }
         Player.prototype.update = function () {
             if (this.name == "bottom") {
@@ -213,12 +224,16 @@ var states;
         function PlayState() {
             _super.apply(this, arguments);
         }
+        PlayState.prototype.render = function () {
+            this.game.debug.text('bottomPlayer Score: ' + this.player1.score + "   is alive? " + this.player1.alive, 100, 100);
+            this.game.debug.text('topPlayer Score: ' + this.player2.score + "   is alive? " + this.player2.alive, 100, 120);
+            this.game.debug.text('leftPlayer Score: ' + this.player3.score + "   is alive? " + this.player3.alive, 100, 140);
+            this.game.debug.text('rightPlayer Score: ' + this.player4.score + "   is alive? " + this.player4.alive, 100, 160);
+            this.game.debug.text("last hit ball: " + this.lastHitBall.name + " player", 100, 180);
+        };
+
         PlayState.prototype.create = function () {
-            //this.background = this.add.sprite(this.game.world.width / 2, 0, "level1");
-            //this.background.anchor.setTo(0.5, 0);
-            //this.music = this.add.audio("zap", 1, false);
-            //this.music.play();
-            //this.player = new Player(this.game, 130, 284);
+            this.lastHitBall = new Phaser.Sprite(this.game, 0, 0);
             this.ball = this.add.sprite(this.game.world.width / 2, this.game.world.height / 2, "ball");
             this.ball.anchor.setTo(0.5, 0.5);
             this.game.physics.arcade.enableBody(this.ball);
@@ -230,49 +245,174 @@ var states;
             var speed = 200;
             var ang = Math.random() * 360;
 
-            var speedY = Math.sin(ang) * speed;
-            var speedX = Math.cos(ang) * speed;
+            var speedY = Math.sin(ang / 180 * Math.PI) * speed;
+            var speedX = Math.cos(ang / 180 * Math.PI) * speed;
 
             this.ball.body.velocity.x = speedX;
             this.ball.body.velocity.y = speedY;
+
+            this.players = this.add.group();
 
             this.player1 = new states.Player(this.game, 0, 0, "bottom");
             this.player2 = new states.Player(this.game, 0, 0, "top");
             this.player3 = new states.Player(this.game, 0, 0, "left");
             this.player4 = new states.Player(this.game, 0, 0, "right");
+
+            this.players.add(this.player1);
+            this.players.add(this.player2);
+            this.players.add(this.player3);
+            this.players.add(this.player4);
+
+            this.walls = this.add.group();
+            this.walls.enableBody = true;
+
+            var leftWall = this.walls.create(0, 0, 'white');
+            var rightWall = this.walls.create(this.game.world.width - 3, 0, 'white');
+            var topWall = this.walls.create(0, 0, 'white');
+            var bottomWall = this.walls.create(0, this.game.world.height - 3, 'white');
+
+            this.walls.setAll('tint', 0x000000);
+
+            leftWall.height = this.game.world.height;
+            leftWall.width = 3;
+            leftWall.name = 'leftWall';
+            leftWall.body.immovable = true;
+            leftWall.isTweenin = false;
+
+            rightWall.height = this.game.world.height;
+            rightWall.width = 3;
+            rightWall.name = 'rightWall';
+            rightWall.body.immovable = true;
+            rightWall.isTweenin = false;
+
+            topWall.height = 3;
+            topWall.width = this.game.world.width;
+            topWall.name = 'topWall';
+            topWall.body.immovable = true;
+            topWall.isTweenin = false;
+
+            bottomWall.height = 3;
+            bottomWall.width = this.game.world.width;
+            bottomWall.name = 'bottomWall';
+            bottomWall.body.immovable = true;
+            bottomWall.isTweenin = false;
+
+            this.zap = this.game.add.audio('zap');
+            this.ping = this.game.add.audio('ping');
         };
 
         PlayState.prototype.update = function () {
             //console.log(this.ball.body.velocity.y);
             this.physics.arcade.collide(this.player1, this.ball, this.hitBall, null, this);
+            this.physics.arcade.collide(this.player2, this.ball, this.hitBall, null, this);
+            this.physics.arcade.collide(this.player3, this.ball, this.hitBall, null, this);
+            this.physics.arcade.collide(this.player4, this.ball, this.hitBall, null, this);
+
+            this.physics.arcade.overlap(this.ball, this.walls, this.hitWall, null, this);
+        };
+
+        PlayState.prototype.hitWall = function (b, w) {
+            var playerKilled = false;
+            if (w.name == 'leftWall' && this.player3.exists) {
+                this.player3.kill();
+                playerKilled = true;
+                this.lastHitBall.score += 1;
+            }
+            if (w.name == 'rightWall' && this.player4.exists) {
+                this.player4.kill();
+                playerKilled = true;
+                this.lastHitBall.score += 1;
+            }
+            if (w.name == 'bottomWall' && this.player1.exists) {
+                this.player1.kill();
+                playerKilled = true;
+                this.lastHitBall.score += 1;
+            }
+            if (w.name == 'topWall' && this.player2.exists) {
+                this.player2.kill();
+                playerKilled = true;
+                this.lastHitBall.score += 1;
+            }
+
+            if (!w.isTweenin) {
+                if (playerKilled)
+                    this.zap.play();
+                else
+                    this.ping.play();
+
+                w.isTweenin = true;
+                var tween = this.game.add.tween(w);
+                tween.to({ tint: 0xFF0000 }, 100, "Linear", false, 0, 0, true);
+                tween.onComplete.add(this.wallTweenComplete, this);
+                tween.start();
+            }
+
+            if (this.players.countLiving() <= 1) {
+                this.gameOver();
+            }
+            ;
+        };
+
+        PlayState.prototype.gameOver = function () {
+            var game = this.game;
+            this.ball.kill();
+            var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
+            var txt = game.add.text(game.world.centerX, game.world.centerY, "GAME OVER", style);
+            txt.anchor.set(0.5, 0.5);
+
+            var style2 = { font: "24px Arial", fill: "#ffffff", align: "center" };
+            var txt2 = game.add.text(game.world.centerX, game.world.centerY + 50, "Click to Restart", style2);
+            txt2.anchor.set(0.5, 0.5);
+            this.input.onDown.addOnce(function () {
+                game.state.start(game.state.current);
+            }, this);
+        };
+
+        PlayState.prototype.wallTweenComplete = function (w) {
+            w.isTweenin = false;
         };
 
         PlayState.prototype.hitBall = function (p, b) {
-            //console.log(b.body.velocity.y);
-            //b.body.velocity.y = -b.body.velocity.y;
-            var diff = (p.x - b.x);
+            this.ping.play();
+            this.lastHitBall = p;
+            if (p == this.player1) {
+                var diff = (p.x - b.x);
 
-            //if (diff > 0) // left side
-            //{
-            //    diff = diff / 40;
-            //    b.body.velocity.x = -diff * Math.abs(b.body.velocity.x);
-            //}
-            //else if (diff < 0) {
-            //    diff = diff / 40;
-            //    b.body.velocity.x = -diff * Math.abs(b.body.velocity.x);
-            //}
-            console.log("s: " + b.body.speed);
+                var C = b.body.speed * 1.02;
+                var ang = 270 - diff / 100 * 80;
+                var speedY = Math.sin(ang / 180 * Math.PI) * C;
+                var speedX = Math.cos(ang / 180 * Math.PI) * C;
+            }
+            if (p == this.player2) {
+                var diff = -(p.x - b.x);
 
-            var C = b.body.speed * 1.02;
-            var A = -diff * 3;
-            var B;
-            B = Math.sqrt(Math.abs(C * C - A * A));
-            var ang = diff / 80 * 90 + 90;
-            var speedY = Math.sin(ang) * C;
-            var speedX = Math.cos(ang) * C;
-            console.log(speedX, speedY, ang);
-            b.body.velocity.x = 0;
-            b.body.velocity.y = -100;
+                var C = b.body.speed * 1.02;
+                var ang = 90 - diff / 100 * 80;
+                var speedY = Math.sin(ang / 180 * Math.PI) * C;
+                var speedX = Math.cos(ang / 180 * Math.PI) * C;
+            }
+
+            if (p == this.player3) {
+                var diff = -(p.y - b.y);
+
+                var C = b.body.speed * 1.02;
+                var ang = diff / 100 * 80;
+                var speedY = Math.sin(ang / 180 * Math.PI) * C;
+                var speedX = Math.cos(ang / 180 * Math.PI) * C;
+            }
+
+            if (p == this.player4) {
+                var diff = -(p.y - b.y);
+
+                var C = b.body.speed * 1.02;
+                var ang = 180 - diff / 100 * 80;
+
+                var speedY = Math.sin(ang / 180 * Math.PI) * C;
+                var speedX = Math.cos(ang / 180 * Math.PI) * C;
+            }
+
+            b.body.velocity.x = speedX;
+            b.body.velocity.y = speedY;
         };
         return PlayState;
     })(Phaser.State);

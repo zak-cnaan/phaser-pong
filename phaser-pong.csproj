@@ -20,9 +20,13 @@
   <ItemGroup>
     <Content Include="apple-touch-icon.png" />
     <Content Include="assets\ball.png" />
+    <Content Include="assets\bar-h.png" />
     <Content Include="assets\bar.png" />
+    <Content Include="assets\black.png" />
     <Content Include="assets\orientation.jpg" />
     <Content Include="assets\OSAA_LOGO.png" />
+    <Content Include="assets\ping.wav" />
+    <Content Include="assets\white.png" />
     <Content Include="css\stylesheet.css" />
     <Content Include="icons\app_icon_1024x1024.png" />
     <Content Include="icons\app_icon_114x114.png" />
